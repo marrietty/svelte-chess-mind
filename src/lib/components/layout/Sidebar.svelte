@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ViewId } from '$lib/types';
+  import { userStore, signOut } from '$lib/userStore.js';
 
   let { activeViewId, onnavigate }: {
     activeViewId: ViewId;
@@ -9,6 +10,24 @@
   function selectView(viewId: ViewId) {
     if (onnavigate) {
       onnavigate(new CustomEvent('navigate', { detail: { viewId } }));
+    }
+  }
+
+  function getInitials(name: string): string {
+    if (!name) return '??';
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  }
+
+  async function handleLogout() {
+    try {
+      await signOut();
+    } catch (err) {
+      console.error('Logout failed:', err);
     }
   }
 </script>
@@ -70,13 +89,22 @@
   </nav>
 
   <div class="sidebar-bottom">
-    <div class="user-pill">
-      <div class="user-avatar">CM</div>
-      <div>
-        <div class="user-name">Chess Student</div>
-        <div class="user-rank">🎓 Beginner | 142 ELO</div>
+    {#if $userStore}
+      <div class="user-pill">
+        {#if $userStore.avatarUrl}
+          <img class="user-avatar-img" src={$userStore.avatarUrl} alt={$userStore.name} referrerpolicy="no-referrer" />
+        {:else}
+          <div class="user-avatar">{getInitials($userStore.name)}</div>
+        {/if}
+        <div class="user-info">
+          <div class="user-name">{$userStore.name}</div>
+          <div class="user-email">{$userStore.email}</div>
+        </div>
       </div>
-    </div>
+      <button class="logout-btn" onclick={handleLogout}>
+        <span class="logout-icon">↩</span> Sign Out
+      </button>
+    {/if}
   </div>
 </aside>
 
@@ -173,6 +201,9 @@
   .sidebar-bottom {
     padding: 16px;
     border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .user-pill {
@@ -183,6 +214,7 @@
     background: var(--bg-card);
     border-radius: 8px;
     border: 1px solid var(--border);
+    overflow: hidden;
   }
 
   .user-avatar {
@@ -199,13 +231,61 @@
     flex-shrink: 0;
   }
 
+  .user-avatar-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
   .user-name {
     font-size: 12px;
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .user-rank {
+  .user-email {
     font-size: 10px;
     color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .logout-btn:hover {
+    border-color: var(--danger);
+    color: var(--danger-light);
+    background: rgba(160, 80, 80, 0.05);
+  }
+
+  .logout-icon {
+    font-size: 12px;
   }
 </style>
