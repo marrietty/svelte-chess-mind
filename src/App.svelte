@@ -22,6 +22,10 @@
   import { promotionState } from '$lib/stores/promotion';
   import { aiGameStore } from '$lib/stores/aiGame';
   import { pvpGameStore } from '$lib/stores/pvpGame';
+  import { userStore, authInitialized } from '$lib/userStore.js';
+
+  // Components
+  import Login from '$lib/components/auth/Login.svelte';
 
   // ── Handlers threaded down from the overlay store callbacks ─────────────────
 
@@ -52,60 +56,69 @@
   });
 </script>
 
-<div class="app-shell">
-  <!-- ── Left Sidebar ───────────────────────────────────────────────────────── -->
-  <Sidebar
-    activeViewId={$activeView}
-    onnavigate={(e: CustomEvent<{ viewId: ViewId }>) => activeView.set(e.detail.viewId)}
-  />
-
-  <!-- ── Main Column ────────────────────────────────────────────────────────── -->
-  <div class="main">
-    <Topbar
-      title={$topbarMeta.title}
-      breadcrumb={$topbarMeta.breadcrumb}
+{#if !$authInitialized}
+  <div class="loading-screen">
+    <div class="logo">♛ ChessMind</div>
+    <div class="spinner"></div>
+  </div>
+{:else if $userStore}
+  <div class="app-shell">
+    <!-- ── Left Sidebar ───────────────────────────────────────────────────────── -->
+    <Sidebar
+      activeViewId={$activeView}
+      onnavigate={(e: CustomEvent<{ viewId: ViewId }>) => activeView.set(e.detail.viewId)}
     />
 
-    <!-- Views: always rendered (preserves game state), hidden via CSS -->
-    <div class="view-container">
-      <div class="view" class:active={$activeView === 'dashboard'}>
-        <DashboardView onnavigate={(e: CustomEvent<{ viewId: ViewId }>) => activeView.set(e.detail.viewId)} />
-      </div>
+    <!-- ── Main Column ────────────────────────────────────────────────────────── -->
+    <div class="main">
+      <Topbar
+        title={$topbarMeta.title}
+        breadcrumb={$topbarMeta.breadcrumb}
+      />
 
-      <div class="view" class:active={$activeView === 'ai-play'}>
-        <AIPlayView />
-      </div>
+      <!-- Views: always rendered (preserves game state), hidden via CSS -->
+      <div class="view-container">
+        <div class="view" class:active={$activeView === 'dashboard'}>
+          <DashboardView onnavigate={(e: CustomEvent<{ viewId: ViewId }>) => activeView.set(e.detail.viewId)} />
+        </div>
 
-      <div class="view" class:active={$activeView === 'pvp'}>
-        <PvpView onstudy={() => activeView.set('learn')} />
-      </div>
+        <div class="view" class:active={$activeView === 'ai-play'}>
+          <AIPlayView />
+        </div>
 
-      <div class="view" class:active={$activeView === 'learn'}>
-        <LearnView onloadScenario={(e: CustomEvent<{ scenarioId: ScenarioId }>) => {
-          aiGameStore.loadScenario(e.detail.scenarioId);
-          activeView.set('ai-play');
-        }} />
+        <div class="view" class:active={$activeView === 'pvp'}>
+          <PvpView onstudy={() => activeView.set('learn')} />
+        </div>
+
+        <div class="view" class:active={$activeView === 'learn'}>
+          <LearnView onloadScenario={(e: CustomEvent<{ scenarioId: ScenarioId }>) => {
+            aiGameStore.loadScenario(e.detail.scenarioId);
+            activeView.set('ai-play');
+          }} />
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- ── Global Overlays (portaled to body-level z-index) ─────────────────────── -->
-{#if $promotionState.visible}
-  <PromotionOverlay
-    color={$promotionState.color}
-    onselect={handlePromoSelect}
-  />
-{/if}
+  <!-- ── Global Overlays (portaled to body-level z-index) ─────────────────────── -->
+  {#if $promotionState.visible}
+    <PromotionOverlay
+      color={$promotionState.color}
+      onselect={handlePromoSelect}
+    />
+  {/if}
 
-{#if $gameOverState.visible}
-  <GameOverOverlay
-    icon={$gameOverState.icon}
-    title={$gameOverState.title}
-    subtitle={$gameOverState.subtitle}
-    onplayAgain={handleGameOverPlayAgain}
-    onstudy={handleGameOverStudy}
-  />
+  {#if $gameOverState.visible}
+    <GameOverOverlay
+      icon={$gameOverState.icon}
+      title={$gameOverState.title}
+      subtitle={$gameOverState.subtitle}
+      onplayAgain={handleGameOverPlayAgain}
+      onstudy={handleGameOverStudy}
+    />
+  {/if}
+{:else}
+  <Login />
 {/if}
 
 <style>
@@ -160,5 +173,44 @@
   :global(::-webkit-scrollbar-thumb) {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
+  }
+
+  /* ── Loading Screen ────────────────────────────────────────────────────────── */
+  .loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: var(--bg-void);
+    gap: 24px;
+    width: 100vw;
+  }
+
+  .loading-screen .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 1px;
+    animation: pulse-logo 2s ease-in-out infinite;
+  }
+
+  .loading-screen .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.05);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes pulse-logo {
+    0%, 100% { opacity: 0.6; transform: scale(0.98); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 </style>
