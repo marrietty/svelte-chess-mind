@@ -25,7 +25,20 @@
   import { userStore, authInitialized } from '$lib/userStore.js';
 
   // Components
-  import Login from '$lib/components/auth/Login.svelte';
+  import GuestAuthPopup from '$lib/components/overlays/GuestAuthPopup.svelte';
+
+  // Guest auth popup visibility state
+  let showGuestAuthPopup = $state(false);
+
+  // Monitor game over to show auth interstitial for unauthenticated guests
+  $effect(() => {
+    if ($gameOverState.visible && !$userStore) {
+      const hidePopup = localStorage.getItem('hide_auth_popup') === 'true';
+      if (!hidePopup) {
+        showGuestAuthPopup = true;
+      }
+    }
+  });
 
   // ── Handlers threaded down from the overlay store callbacks ─────────────────
 
@@ -61,7 +74,7 @@
     <div class="logo">♛ ChessMind</div>
     <div class="spinner"></div>
   </div>
-{:else if $userStore}
+{:else}
   <div class="app-shell">
     <!-- ── Left Sidebar ───────────────────────────────────────────────────────── -->
     <Sidebar
@@ -117,8 +130,10 @@
       onstudy={handleGameOverStudy}
     />
   {/if}
-{:else}
-  <Login />
+
+  {#if showGuestAuthPopup}
+    <GuestAuthPopup onclose={() => showGuestAuthPopup = false} />
+  {/if}
 {/if}
 
 <style>
