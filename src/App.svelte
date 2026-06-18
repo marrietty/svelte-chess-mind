@@ -11,6 +11,7 @@
   import AIPlayView from '$lib/components/board/AIPlayView.svelte';
   import PvpView from '$lib/components/board/PvpView.svelte';
   import LearnView from '$lib/components/learn/LearnView.svelte';
+  import ProgressView from '$lib/components/dashboard/ProgressView.svelte';
 
   // Global overlays
   import PromotionOverlay from '$lib/components/overlays/PromotionOverlay.svelte';
@@ -108,6 +109,10 @@
             aiGameStore.loadScenario(e.detail.scenarioId);
             activeView.set('ai-play');
           }} />
+        </div>
+
+        <div class="view" class:active={$activeView === 'progress'}>
+          <ProgressView />
         </div>
       </div>
     </div>
