@@ -110,7 +110,7 @@ export interface PendingPromotion {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Top-level views available in the app */
-export type ViewId = 'dashboard' | 'ai-play' | 'pvp' | 'learn' | 'progress';
+export type ViewId = 'dashboard' | 'ai-play' | 'pvp' | 'learn' | 'progress' | 'settings';
 
 /** Current game mode context */
 export type GameMode = 'ai' | 'pvp';

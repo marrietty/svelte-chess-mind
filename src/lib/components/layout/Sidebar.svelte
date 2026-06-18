@@ -89,7 +89,13 @@
     >
       <span class="nav-icon">🏆</span> My Progress
     </div>
-    <div class="nav-item disabled">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      class="nav-item"
+      class:active={activeViewId === 'settings'}
+      onclick={() => selectView('settings')}
+    >
       <span class="nav-icon">⚙</span> Settings
     </div>
   </nav>
