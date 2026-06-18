@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Board } from '$lib/types';
-  import { PIECES } from '$lib/chess/engine';
+  import { PIECE_IMAGES } from '$lib/chess/engine';
 
   let { board }: { board: Board } = $props();
 </script>
@@ -10,7 +10,9 @@
     {#each Array(8) as _, f}
       {@const cell = board[r][f]}
       <div class="mini-sq {(r + f) % 2 === 0 ? 'light' : 'dark'}">
-        {cell ? PIECES[cell] || '' : ''}
+        {#if cell}
+          <img src={PIECE_IMAGES[cell]} alt={cell} class="mini-piece-img" />
+        {/if}
       </div>
     {/each}
   {/each}
@@ -44,5 +46,13 @@
 
   .mini-sq.dark {
     background: var(--square-dark);
+  }
+
+  .mini-piece-img {
+    width: 86%;
+    height: 86%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
   }
 </style>
