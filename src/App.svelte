@@ -12,6 +12,7 @@
   import PvpView from '$lib/components/board/PvpView.svelte';
   import LearnView from '$lib/components/learn/LearnView.svelte';
   import ProgressView from '$lib/components/dashboard/ProgressView.svelte';
+  import SettingsView from '$lib/components/dashboard/SettingsView.svelte';
 
   // Global overlays
   import PromotionOverlay from '$lib/components/overlays/PromotionOverlay.svelte';
@@ -113,6 +114,10 @@
 
         <div class="view" class:active={$activeView === 'progress'}>
           <ProgressView />
+        </div>
+
+        <div class="view" class:active={$activeView === 'settings'}>
+          <SettingsView />
         </div>
       </div>
     </div>

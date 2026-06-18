@@ -9,6 +9,7 @@ const VIEW_TITLES: Record<ViewId, string> = {
   pvp:       'Player vs Player',
   learn:     'Learning Hub',
   progress:  'My Progress',
+  settings:  'Settings',
 };
 
 const VIEW_BREADCRUMBS: Record<ViewId, string> = {
@@ -17,6 +18,7 @@ const VIEW_BREADCRUMBS: Record<ViewId, string> = {
   pvp:       'ChessMind / Local Match',
   learn:     'ChessMind / Learning Hub',
   progress:  'ChessMind / My Progress',
+  settings:  'ChessMind / Settings',
 };
 
 // ── Active view ───────────────────────────────────────────────────────────────

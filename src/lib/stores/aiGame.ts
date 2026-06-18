@@ -16,7 +16,16 @@ import { SCENARIOS } from '$lib/chess/scenarios';
 // ── AI-specific reactive state ────────────────────────────────────────────────
 
 export const difficulty     = writable<Difficulty>('easy');
-export const showHints      = writable<boolean>(true);
+// Load showHints from localStorage if present
+const savedHints = typeof window !== 'undefined' ? localStorage.getItem('chessmind-show-hints') : null;
+export const showHints      = writable<boolean>(savedHints !== null ? savedHints === 'true' : true);
+
+if (typeof window !== 'undefined') {
+  showHints.subscribe((val) => {
+    localStorage.setItem('chessmind-show-hints', String(val));
+  });
+}
+
 export const showLastMove   = writable<boolean>(true);
 export const showLabels     = writable<boolean>(false);
 export const isAIThinking   = writable<boolean>(false);
