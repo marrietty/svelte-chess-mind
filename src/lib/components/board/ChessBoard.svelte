@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { GameState, GameMode, BoardOptions } from '$lib/types';
-  import { PIECES, opponent, isAttacked, findKing } from '$lib/chess/engine';
+  import { PIECE_IMAGES, opponent, isAttacked, findKing } from '$lib/chess/engine';
   import { boardThemeStore, showCaptureGuide } from '$lib/stores/theme';
   import { getCaptureOpportunities } from '$lib/chess/analysis';
 
@@ -76,7 +76,9 @@
             onclick={() => onSquareClick(r, f)}
           >
             {#if cell}
-              <div class="piece">{PIECES[cell] || ''}</div>
+              <div class="piece">
+                <img class="piece-img" src={PIECE_IMAGES[cell]} alt={cell} />
+              </div>
             {/if}
           </div>
         {/each}
@@ -255,5 +257,14 @@
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
     pointer-events: none;
     user-select: none;
+  }
+
+  .piece-img {
+    width: 86%;
+    height: 86%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
   }
 </style>

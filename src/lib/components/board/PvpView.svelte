@@ -1,6 +1,6 @@
 <script lang="ts">
   import { pvpGameStore } from '$lib/stores/pvpGame';
-  import { PIECES, opponent, isAttacked, findKing, moveToNotation } from '$lib/chess/engine';
+  import { PIECE_IMAGES, opponent, isAttacked, findKing, moveToNotation } from '$lib/chess/engine';
   import ChessBoard from './ChessBoard.svelte';
   import StatusIndicator from './StatusIndicator.svelte';
   import { boardThemeStore, setBoardTheme, showCaptureGuide, toggleCaptureGuide } from '$lib/stores/theme';
@@ -130,7 +130,7 @@
         <span class="captured-label">Captured</span>
         <div class="captured-row">
           {#each game.capturedByWhite as piece}
-            <span>{PIECES[piece]}</span>
+            <img src={PIECE_IMAGES[piece]} alt={piece} class="captured-piece-img" />
           {/each}
         </div>
       </div>
@@ -153,7 +153,7 @@
         <span class="captured-label">Captured</span>
         <div class="captured-row">
           {#each game.capturedByBlack as piece}
-            <span>{PIECES[piece]}</span>
+            <img src={PIECE_IMAGES[piece]} alt={piece} class="captured-piece-img" />
           {/each}
         </div>
       </div>
@@ -397,6 +397,14 @@
     min-height: 24px;
     font-size: 18px;
     line-height: 1;
+    align-items: center;
+  }
+
+  .captured-piece-img {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
   }
 
   /* Right Panel */
